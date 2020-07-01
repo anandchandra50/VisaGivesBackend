@@ -11,9 +11,12 @@ def index(request):
     # We need to translate the sender's email to a card
     # We need these variables:
     # amount, sender card exp date, sender account number (card), recipient card number, recipient card exp date
-
+    if request.method == "GET":
+        return HttpResponse("GET REQUEST")
+    elif request.method != "POST":
+        return HttpResponseNotFound("POST REQUEST ONLY")
     amount = "100"
-    senderCardExpiryDate = "2020-10"
+
     # SENDERS
     # 4895142232120006
     # RECEIVERS
@@ -21,9 +24,23 @@ def index(request):
     # PULL
     # senderPrimaryAccountNumber = "4957030420210454"
     # recipientPrimaryAccountNumber = "4957030420210462"
+    # json.loads(request.body)
+
+    # TEST DATA
+    senderCardExpiryDate = "2020-10"
     senderPrimaryAccountNumber = "4957030005123304"
     recipientPrimaryAccountNumber = "5123280115058611"
     recipientCardExpiryDate = "2020-11"
+
+    # EXTRACT DATA
+    requestBody = json.loads(request.body)
+    amount = requestBody["amount"]
+    senderPrimaryAccountNumber = requestBody["senderPrimaryAccountNumber"]
+    senderCardExpiryDate = requestBody["senderCardExpiryDate"]
+    recipientPrimaryAccountNumber = requestBody["recipientPrimaryAccountNumber"]
+    recipientCardExpiryDate = requestBody["recipientCardExpiryDate"]
+
+
     print('SENDER: {}'.format(senderPrimaryAccountNumber))
     print('RECEIVER: {}'.format(recipientPrimaryAccountNumber))
     transactionId = pullFunds(
