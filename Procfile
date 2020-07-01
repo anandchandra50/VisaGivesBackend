@@ -1,1 +1,1 @@
-web: gunicorn recelery.wsgi
+web: gunicorn visagives.wsgi
