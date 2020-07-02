@@ -35,8 +35,11 @@ def index(request):
     recipientCardExpiryDate = "2020-11"
 
     # EXTRACT DATA
+    print('PRINTING REQUEST')
+    print(request)
+    print('PRINTING REQUEST BODY')
+    print(request.body)
     requestBody = json.loads(request.body)
-    print(requestBody)
     amount = requestBody["amount"]
     senderPrimaryAccountNumber = requestBody["senderPrimaryAccountNumber"]
     senderCardExpiryDate = requestBody["senderCardExpiryDate"]
