@@ -36,6 +36,7 @@ def index(request):
 
     # EXTRACT DATA
     requestBody = json.loads(request.body)
+    print(requestBody)
     amount = requestBody["amount"]
     senderPrimaryAccountNumber = requestBody["senderPrimaryAccountNumber"]
     senderCardExpiryDate = requestBody["senderCardExpiryDate"]
