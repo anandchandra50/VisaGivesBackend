@@ -5,6 +5,7 @@ import sys
 sys.path.insert(1, '../utilities.py')
 from utilities import pullFunds, pushFunds, reverseFunds
 
+@csrf_exempt
 def index(request):
     # Pull Funds
     # From the response: take transaction ID
