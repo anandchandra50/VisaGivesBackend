@@ -5,7 +5,7 @@ import json
 import sys
 import hashlib
 sys.path.insert(1, '../utilities.py')
-from utilities import pullFunds, pushFunds, reverseFunds
+from utilities import pullFunds, pushFunds, reverseFunds, resolveAlias
 
 @csrf_exempt
 def index(request):
