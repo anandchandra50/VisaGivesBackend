@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 import sys
+import hashlib
 sys.path.insert(1, '../utilities.py')
 from utilities import pullFunds, pushFunds, reverseFunds
 
