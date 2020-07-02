@@ -8,47 +8,49 @@ from utilities import pullFunds, pushFunds, reverseFunds
 
 @csrf_exempt
 def index(request):
-    # Pull Funds
-    # From the response: take transaction ID
-    # We need to translate the sender's email to a card
-    # We need these variables:
-    # amount, sender card exp date, sender account number (card), recipient card number, recipient card exp date
+    # Filter requests
     if request.method == "GET":
         return HttpResponse("GET REQUEST")
     elif request.method != "POST":
         return JsonResponse({"STATUS": "POST REQUEST ONLY"})
-    amount = "100"
-
-    # SENDERS
-    # 4895142232120006
-    # RECEIVERS
-    # 4957030420210496
-    # PULL
-    # senderPrimaryAccountNumber = "4957030420210454"
-    # recipientPrimaryAccountNumber = "4957030420210462"
-    # json.loads(request.body)
 
     # TEST DATA
-    senderCardExpiryDate = "2020-10"
-    senderPrimaryAccountNumber = "4957030005123304"
-    recipientPrimaryAccountNumber = "5123280115058611"
-    recipientCardExpiryDate = "2020-11"
+    # amount = "100"
+    # senderCardExpiryDate = "2020-10"
+    # senderPrimaryAccountNumber = "4957030005123304"
+    # recipientPrimaryAccountNumber = "5123280115058611"
+    # recipientCardExpiryDate = "2020-11"
 
-    # EXTRACT DATA
-    print('PRINTING REQUEST')
-    print(request)
+    # LOG PRINTS
     print('PRINTING REQUEST BODY')
     print(request.body)
+
+    # PARSE BODIES
     requestBody = json.loads(request.body)
     amount = str(requestBody["amount"])
-    senderPrimaryAccountNumber = str(requestBody["senderPrimaryAccountNumber"])
-    senderCardExpiryDate = str(requestBody["senderCardExpiryDate"])
-    recipientPrimaryAccountNumber = str(requestBody["recipientPrimaryAccountNumber"])
-    recipientCardExpiryDate = str(requestBody["recipientCardExpiryDate"])
+    senderEmail = str(requestBody["senderEmail"])
+    hashedSenderEmail = str(int(hashlib.sha256(senderEmail.encode('utf-8')).hexdigest(), 16))
+    recipientEmail = str(requestBody["recipientEmail"])
+    hashedRecipientEmail = str(int(hashlib.sha256(recipientEmail.encode('utf-8')).hexdigest(), 16))
 
+    # RESOLVE ALIASES — NORMALLY WOULD USE HASHED EMAIL
+    senderPrimaryAccountNumber = resolveAlias('74958889999')
+    recipientPrimaryAccountNumber = resolveAlias('74958889999')
+    if senderPrimaryAccountNumber == 'ERROR' or recipientPrimaryAccountNumber == 'ERROR':
+        return JsonResponse({"STATUS": "BAD REQUEST"})
 
-    print('SENDER: {}'.format(senderPrimaryAccountNumber))
-    print('RECEIVER: {}'.format(recipientPrimaryAccountNumber))
+    # SET PROPER VALUES FOR API CALLS
+    senderCardExpiryDate = "2020-11"
+    recipientCardExpiryDate = "2020-11"
+    senderPrimaryAccountNumber = "4957030005123304"
+    recipientPrimaryAccountNumber = "5123280115058611"
+
+    # senderPrimaryAccountNumber = str(requestBody["senderPrimaryAccountNumber"])
+    # senderCardExpiryDate = str(requestBody["senderCardExpiryDate"])
+    # recipientPrimaryAccountNumber = str(requestBody["recipientPrimaryAccountNumber"])
+    # recipientCardExpiryDate = str(requestBody["recipientCardExpiryDate"])
+
+    # PULL FUNDS
     transactionId = pullFunds(
         amount,
         senderPrimaryAccountNumber,
@@ -56,6 +58,8 @@ def index(request):
     )
     if transactionId == 'ERROR':
         return JsonResponse({"STATUS": "BAD REQUEST"})
+
+    # PUSH FUNDS
     response = pushFunds(
         str(transactionId),
         amount,
@@ -64,6 +68,8 @@ def index(request):
         recipientPrimaryAccountNumber,
         recipientCardExpiryDate
     )
+
+    # CHECK PUSH FUNDS ERROR, AND REVERSE IF NEED BE
     if response == 'ERROR':
         reverseFunds(
             str(transactionId),

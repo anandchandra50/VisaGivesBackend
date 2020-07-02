@@ -242,3 +242,70 @@ def reverseFunds(transactionIdentifier, amount, senderPrimaryAccountNumber, send
     print('------------------')
     print(responseBody)
     print('------------------')
+
+def createAlias(email, recipientPrimaryAccountNumber):
+    createAliasUrl = 'https://sandbox.api.visa.com/visaaliasdirectory/v1/manage/createalias'
+    createAliasPayload = json.loads('''
+    {
+    "guid": "'''+email+'''",
+    "recipientFirstName": "Jamie",
+    "recipientMiddleName": "M",
+    "recipientLastName": "Bakari",
+    "address1": "Street 1",
+    "address2": "Region 1",
+    "city": "Nairobi",
+    "country": "KE",
+    "postalCode": "00111",
+    "consentDateTime": "2018-03-01 01:02:03",
+    "recipientPrimaryAccountNumber": "'''+recipientPrimaryAccountNumber+'''",
+    "issuerName": "Test Bank 1",
+    "cardType": "Visa Classic",
+    "alias": "254711333888",
+    "aliasType": "01"
+    }
+    ''')
+
+    response = requests.post(createAliasUrl,
+				  cert = (cert,key),
+				  headers = headers,
+				  auth = (user_id, password),
+                  json=createAliasPayload,
+                  timeout=timeout
+                )
+    responseBody = json.loads(response.text)
+    print('CREATE ALIAS RESPONSE')
+    print('------------------')
+    print(responseBody)
+    print('------------------')
+    if 'guid' in responseBody:
+        return responseBody['guid']
+    return 'ERROR'
+
+def resolveAlias(alias):
+    resolveAliasUrl = 'https://sandbox.api.visa.com/visaaliasdirectory/v1/resolve'
+
+    resolveAliasPayload = json.loads('''
+    {
+    "alias": "'''+alias+'''",
+    "businessApplicationId": "PP"
+    }
+    ''')
+
+    response = requests.post(resolveAliasUrl,
+                #   verify = ('put the CA certificate pem file path here'),
+				  cert = (cert,key),
+				  headers = headers,
+				  auth = (user_id, password),
+				#   data = body
+                  json=resolveAliasPayload,
+                  timeout=timeout
+                  )
+    responseBody = json.loads(response.text)
+    print('RESOLVE ALIAS RESPONSE')
+    print('------------------')
+    print(responseBody)
+    print('------------------')
+    if 'recipientPrimaryAccountNumber' in responseBody:
+        return responseBody['recipientPrimaryAccountNumber']
+    else:
+        return 'ERROR'
