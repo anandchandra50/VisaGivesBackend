@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 # from callapi import callApi
 import sys
 sys.path.insert(1, '../utilities.py')
@@ -14,7 +14,7 @@ def index(request):
     if request.method == "GET":
         return HttpResponse("GET REQUEST")
     elif request.method != "POST":
-        return HttpResponseNotFound("POST REQUEST ONLY")
+        return JsonResponse({"STATUS": "POST REQUEST ONLY"})
     amount = "100"
 
     # SENDERS
@@ -49,7 +49,7 @@ def index(request):
         senderCardExpiryDate
     )
     if transactionId == 'ERROR':
-        return HttpResponseNotFound("BAD REQUEST")
+        return JsonResponse({"STATUS": "BAD REQUEST"})
     response = pushFunds(
         str(transactionId),
         amount,
@@ -65,5 +65,5 @@ def index(request):
             senderPrimaryAccountNumber,
             senderCardExpiryDate,
         )
-        return HttpResponseNotFound("BAD REQUEST")
-    return HttpResponse("SUCCESS")
+        return JsonResponse({"STATUS": "BAD REQUEST"})
+    return JsonResponse({"STATUS": "SUCCESS"})
