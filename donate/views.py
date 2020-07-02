@@ -40,11 +40,11 @@ def index(request):
     print('PRINTING REQUEST BODY')
     print(request.body)
     requestBody = json.loads(request.body)
-    amount = requestBody["amount"]
-    senderPrimaryAccountNumber = requestBody["senderPrimaryAccountNumber"]
-    senderCardExpiryDate = requestBody["senderCardExpiryDate"]
-    recipientPrimaryAccountNumber = requestBody["recipientPrimaryAccountNumber"]
-    recipientCardExpiryDate = requestBody["recipientCardExpiryDate"]
+    amount = str(requestBody["amount"])
+    senderPrimaryAccountNumber = str(requestBody["senderPrimaryAccountNumber"])
+    senderCardExpiryDate = str(requestBody["senderCardExpiryDate"])
+    recipientPrimaryAccountNumber = str(requestBody["recipientPrimaryAccountNumber"])
+    recipientCardExpiryDate = str(requestBody["recipientCardExpiryDate"])
 
 
     print('SENDER: {}'.format(senderPrimaryAccountNumber))
